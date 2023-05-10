@@ -8,4 +8,4 @@ def browser_url():
     browser.config.window_height = 1200
     browser.config.window_width = 1500
 
-    pass
+
