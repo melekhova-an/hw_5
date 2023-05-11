@@ -1,6 +1,5 @@
 from demoqa_tests import resources
 
-
 from selene import have
 from selene.support.shared import browser
 
@@ -9,43 +8,63 @@ class RegistrationPage:
     def open(self):
         browser.open('/automation-practice-form')
 
+    def fill_first_name(self, value):
+        browser.element('#firstName').type(value)
+        return self
 
-    def fill_date(self, student):
-        browser.element('#firstName').set(student.first_name)
-        browser.element('#lastName').set(student.last_name)
-        browser.element('#userEmail').set(student.email)
-        browser.all('[name=gender]').element_by(have.value(student.gender)).element('..').click()
-        browser.element('#userNumber').set(student.mobile)
+    def fill_last_name(self, value):
+        browser.element('#lastName').type(value)
+
+    def fill_email(self, value):
+        browser.element('#userEmail').type(value)
+
+    def gender(self, text):
+        browser.all('[name=gender]').element_by(have.value(text)).element('..').click()
+
+    def fill_number(self, value):
+        browser.element('#userNumber').type(value)
+
+    def fill_date_of_birth(self, year, month, day):
         browser.element('#dateOfBirthInput').click()
-        browser.element('.react-datepicker__year-select').send_keys(student.date_of_birth.year)
-        browser.element('.react-datepicker__month-select').send_keys(student.date_of_birth.strftime('%B'))
-        browser.element(f'.react-datepicker__day--0{student.date_of_birth.day}').click()
-        browser.element('#subjectsInput').type(student.subject).press_enter()
-        browser.all('.custom-checkbox').element_by(have.exact_text(student.hobby)).click()
-        browser.element('#uploadPicture').send_keys(resources.path(student.picture))
-        browser.element('#currentAddress').type(student.address)
-        browser.element('#react-select-3-input').type(student.state).press_enter()
-        browser.element('#react-select-4-input').type(student.city).press_enter()
+        browser.element('.react-datepicker__year-select').type(year)
+        browser.element('.react-datepicker__month-select').type(month)
+        browser.element(f'[aria-label="Choose Wednesday, {month} {day}th, {year}"]').click()
+
+    def subject(self, value):
+        browser.element('#subjectsInput').type(value).press_enter()
+
+    def hobby(self, value):
+        browser.all('.custom-checkbox').element_by(have.exact_text(value)).click()
+
+    def picture(self, picture):
+        browser.element('#uploadPicture').send_keys(resources.path(picture))
+
+    def fill_address(self, value):
+        browser.element('#currentAddress').type(value)
+
+    def fill_state(self, state):
+        browser.element('#state').click()
+        browser.all('[id^=react-select][id*=option]').element_by(have.exact_text(state)).click()
+
+    def fill_city(self, city):
+        browser.element('#city').click()
+        browser.all('[id^=react-select][id*=option]').element_by(have.exact_text(city)).click()
+
 
     def submit(self):
         browser.element('#submit').press_enter()
 
-    def should_registered_user_with(self, student):
-        full_name = f'{student.first_name} {student.last_name}',
-        date_of_birth = f'{student.date_of_birth.day} {student.date_of_birth.strftime("%B")},{student.date_of_birth.year}'
-        city = f'{student.state} {student.city}'
-
-        browser.element('.table').all('td').even.should(
-            have.exact_texts(
+    def should_registered_user_with(self, full_name, email, gender, mobile, date_of_birth, subject, hobby, picture, address, city):
+        browser.element('.table').all('td').even.should(have.exact_texts(
                 full_name,
-                student.email,
-                student.gender,
-                str(student.mobile),
+                email,
+                gender,
+                mobile,
                 date_of_birth,
-                student.subject,
-                student.hobby,
-                student.picture,
-                student.address,
+                subject,
+                hobby,
+                picture,
+                address,
                 city
             ))
 
